@@ -1,0 +1,13 @@
+import React from 'react';import {ArrowDown, ArrowUp, BrainCircuit, MapPinned, Users} from 'lucide-react';import PageHeader from '../../components/ui/PageHeader';import {useEventData} from '../../context/EventDataContext';
+export default function Crowd(){
+  const {crowd,venueLocations}=useEventData();
+  const busiest=Object.entries(crowd.gates).sort((a,b)=>b[1]-a[1])[0];
+  const gateTone=v=>v>=85?'red':v>=70?'amber':'green';
+  const gateZones=venueLocations.filter(l=>l.type==='Gate');
+  return <><PageHeader eyebrow="ORGANIZER · CROWD & ZONES" title="Crowd & Zones" subtitle="Density, capacity and gate status across every organizer-defined zone."/>
+  <div className="crowd-top"><div className="big-metric"><span>LIVE CROWD</span><strong>{crowd.total.toLocaleString()}</strong><small>+4.8% in the last 15 min</small></div><div className="big-metric"><span>VENUE UTILIZATION</span><strong>{crowd.utilization}%</strong><small>Target band 65–85%</small></div><div className="big-metric"><span>FORECAST</span><strong>{busiest[1]>=85?'High':'Moderate'}</strong><small>Gate {busiest[0]} · next 30 min</small></div></div>
+  <div className="panel"><div className="panel-head"><div><h3>Gate pressure</h3><p>Live density by organizer-defined entry zone — shared with attendee map & recommendations.</p></div></div><div className="bar-chart">{Object.entries(crowd.gates).map(([g,v])=><div className="bar-row" key={g}><span>Gate {g}</span><div><i style={{width:v+'%'}}/></div><b>{v}%</b></div>)}</div></div>
+  <div className="content-grid two-one"><div className="panel"><div className="panel-head"><div><h3><BrainCircuit/> Forecast engine</h3><p>Projected crowd pressure.</p></div></div><div className="forecast-cards">{crowd.forecast.map(f=><div key={f.label}><span>{f.label}</span><b>{f.level}</b><small>{f.detail}</small></div>)}</div></div>
+  <div className="panel"><div className="panel-head"><div><h3>Movement</h3><p>Current direction signals.</p></div></div><div className="movement-row"><ArrowUp/> <b>Stage → Gate B</b><span>+12%</span></div><div className="movement-row"><ArrowDown/> <b>Gate C → Parking</b><span>-6%</span></div><div className="movement-row"><Users/> <b>Food → Stage</b><span>+8%</span></div></div></div>
+  <div className="panel"><div className="panel-head"><div><h3><MapPinned/> Zone & gate status</h3><p>Capacity per organizer-defined zone, shared with Venue Map.</p></div></div>{gateZones.map(z=>{const val=crowd.gates[z.name.replace('Gate ','')];return <div className="location-row" key={z.id}><div className="location-icon"><MapPinned/></div><div><b>{z.name}</b><small>{z.zone}</small></div><span className={`badge ${gateTone(val)}`}>{val}% capacity</span></div>;})}</div></>;
+}
