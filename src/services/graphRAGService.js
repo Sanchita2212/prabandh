@@ -1,7 +1,9 @@
+const GRAPH_API_BASE = import.meta.env.VITE_GRAPH_RAG_URL || 'http://localhost:4000';
+
 export async function queryGraphRAG(question) {
   try {
     const params = new URLSearchParams({ q: question });
-    const response = await fetch(`http://localhost:4000/api/graph/query?${params.toString()}`);
+    const response = await fetch(`${GRAPH_API_BASE}/api/graph/query?${params.toString()}`);
     if (!response.ok) {
       throw new Error('Graph query request failed');
     }

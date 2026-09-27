@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: prabandh-backend
+    runtime: python
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn backend.dynamic_backend:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.2
+
+  - type: web
+    name: prabandh-frontend
+    runtime: static
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://prabandh-backend.onrender.com
+      - key: VITE_GRAPH_RAG_URL
+        value: https://prabandh-backend.onrender.com
+      - key: VITE_OPENWEATHER_API_KEY
+        sync: false
+      - key: VITE_NUGEN_ALIGNMENT_URL
+        sync: false
+      - key: VITE_NUGEN_INFERENCE_URL
+        sync: false
+      - key: VITE_NUGEN_MODEL_ID
+        value: nexora-event-ops-aligned
